@@ -1,1 +1,1 @@
-*.tcl linguist-detectable
+*.tcl -linguist-detectable

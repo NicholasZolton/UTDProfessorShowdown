@@ -1,1 +1,1 @@
-light.tcl -linguist-documentation
+*.tcl linguist-detectable

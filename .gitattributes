@@ -1,2 +1,1 @@
-azure.tcl linguist-vendored=false
-light.tcl linguist-vendored=false
+light.tcl -linguist-documentation

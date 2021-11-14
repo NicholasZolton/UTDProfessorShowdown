@@ -193,8 +193,8 @@ if __name__ == "__main__":
     root.title('UTD Professor Showdown')
 
     # set theme up
-    #root.tk.call("source", "azure.tcl")
-    #root.tk.call("set_theme", "light")
+    root.tk.call("source", "azure.tcl")
+    root.tk.call("set_theme", "light")
 
     # setting the windows size
     root.geometry("700x500")

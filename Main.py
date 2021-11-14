@@ -146,7 +146,7 @@ class App(ttk.Frame):
         self.text_area.insert(tk.INSERT, courseName + '\n')
 
         if courseName.find('No results') == -1:
-            self.text_area.insert(tk.INSERT, "Professor\t\t\t\t|  Comb.\t|  Rating\t|  Grades\n\n")
+            self.text_area.insert(tk.INSERT, "Professor\t\t\t\tComb.\tRating\tGrades\n\n")
         
         # if self.sort_var.get() != 'Combined':
         #     self.text_area.insert(tk.INSERT, "\tClasses") # add classes counter if not default sort
@@ -171,12 +171,12 @@ class App(ttk.Frame):
                 if not found:
                         valid = False
             if valid:
-                add = i.rmpName + "\t\t\t\t|   " + str(round(i.trueRating, 2)) + "\t|   "
+                add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
                 if i.rmpRating != -1:
                     add += str(i.rmpRating)
                 else:
                     add += "N/A"
-                add += "\t|   " + str(i.getMedian()) + "\n"
+                add += "\t" + str(i.getMedian()) + "\n"
         
                 self.text_area.insert(tk.INSERT, add)
 
@@ -193,8 +193,8 @@ if __name__ == "__main__":
     root.title('UTD Professor Showdown')
 
     # set theme up
-    root.tk.call("source", "azure.tcl")
-    root.tk.call("set_theme", "light")
+    #root.tk.call("source", "azure.tcl")
+    #root.tk.call("set_theme", "light")
 
     # setting the windows size
     root.geometry("700x500")

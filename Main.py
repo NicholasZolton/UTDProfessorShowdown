@@ -168,9 +168,12 @@ class App(ttk.Frame):
             for i in self.g1.sortedProfsByMedian:
                 valid = True
                 if len(self.filterList) > 0:
+                    found = False
                     for j in self.filterList:
-                        if i.rmpName.upper().find(j) == -1:
-                            valid = False
+                        if i.rmpName.upper().find(j) != -1:
+                            found = True
+                    if not found:
+                        valid = False
                 if valid:
                     add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
                     if i.rmpRating != -1:
@@ -183,9 +186,12 @@ class App(ttk.Frame):
             for i in self.g1.sortedProfsByRMP:
                 valid = True
                 if len(self.filterList) > 0:
+                    found = False
                     for j in self.filterList:
-                        if i.rmpName.upper().find(j) == -1:
-                            valid = False
+                        if i.rmpName.upper().find(j) != -1:
+                            found = True
+                    if not found:
+                        valid = False
                 if valid:
                     add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
                     if i.rmpRating != -1:

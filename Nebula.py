@@ -30,3 +30,4 @@ def getCourseNameWithNumber(coursePrefix='cs', courseNum=2305):
 	for i in response.json():
 		if i['course_prefix'] == coursePrefix:
 			return i['title']
+	return 'No results for ' + coursePrefix.upper() + ' ' + str(courseNum)

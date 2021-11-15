@@ -141,65 +141,45 @@ class App(ttk.Frame):
         self.table.clear()
         self.text_area.configure(state='normal')
         self.text_area.delete('1.0', tk.END)
-        self.text_area.insert(tk.INSERT, str(Nebula.getCourseNameWithNumber(str(self.pref), self.num)) + '\n')
-        self.text_area.insert(tk.INSERT, "Professor\t\t\t\tComb.\tRating\tGrades\n\n")
+        courseName = str(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
+
+        self.text_area.insert(tk.INSERT, courseName + '\n')
+
+        if courseName.find('No results') == -1:
+            self.text_area.insert(tk.INSERT, "Professor\t\t\t\tComb.\tRating\tGrades\n\n")
+        
         # if self.sort_var.get() != 'Combined':
         #     self.text_area.insert(tk.INSERT, "\tClasses") # add classes counter if not default sort
         # self.text_area.insert(tk.INSERT, "\n\n")
+
+        sorted = 0
+
         if self.sort_var.get() == 'Combined':
-            for i in self.g1.sortedProfsByTrueRating:
-                valid = True
-                if len(self.filterList) > 0:
-                    found = False
-                    for j in self.filterList:
-                        if i.rmpName.upper().find(j) != -1:
-                            found = True
-                    if not found:
-                        valid = False
-                if valid:
-                    add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
-                    if i.rmpRating != -1:
-                        add += str(i.rmpRating)
-                    else:
-                        add += "N/A"
-                    add += "\t" + str(i.getMedian()) + "\n"
-                    self.text_area.insert(tk.INSERT, add)
+            sorted = self.g1.sortedProfsByTrueRating
         elif self.sort_var.get() == 'Grades':
-            for i in self.g1.sortedProfsByMedian:
-                valid = True
-                if len(self.filterList) > 0:
-                    found = False
-                    for j in self.filterList:
-                        if i.rmpName.upper().find(j) != -1:
-                            found = True
-                    if not found:
-                        valid = False
-                if valid:
-                    add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
-                    if i.rmpRating != -1:
-                        add += str(i.rmpRating)
-                    else:
-                        add += "N/A"
-                    add += "\t" + str(i.getMedian()) + "\n"
-                    self.text_area.insert(tk.INSERT, add)
+            sorted = self.g1.sortedProfsByMedian
         else:
-            for i in self.g1.sortedProfsByRMP:
-                valid = True
-                if len(self.filterList) > 0:
-                    found = False
-                    for j in self.filterList:
-                        if i.rmpName.upper().find(j) != -1:
-                            found = True
-                    if not found:
+            sorted = self.g1.sortedProfsByRMP
+
+        for i in sorted:
+            valid = True
+            if len(self.filterList) > 0:
+                found = False
+                for j in self.filterList:
+                    if i.rmpName.upper().find(j) != -1:
+                        found = True
+                if not found:
                         valid = False
-                if valid:
-                    add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
-                    if i.rmpRating != -1:
-                        add += str(i.rmpRating)
-                    else:
-                        add += "N/A"
-                    add += "\t" + str(i.getMedian()) + "\n"
-                    self.text_area.insert(tk.INSERT, add)
+            if valid:
+                add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
+                if i.rmpRating != -1:
+                    add += str(i.rmpRating)
+                else:
+                    add += "N/A"
+                add += "\t" + str(i.getMedian()) + "\n"
+        
+                self.text_area.insert(tk.INSERT, add)
+
         self.text_area.configure(state='disabled')
 
     def updateRMP(self):

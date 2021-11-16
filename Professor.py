@@ -1,4 +1,3 @@
-
 from ratemyprof_api import RMPHolder
 
 class Professor:

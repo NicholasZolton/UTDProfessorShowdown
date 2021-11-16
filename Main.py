@@ -9,6 +9,7 @@ from multiprocessing import Process
 import re
 from Grades import Grades
 
+
 class App(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self)
@@ -16,7 +17,7 @@ class App(ttk.Frame):
         self.g1 = Grades('cs', '2305')
 
         # lists
-        self.option_menu_list = ['','Combined', 'Rating', 'Grades']
+        self.option_menu_list = ['', 'Combined', 'Rating', 'Grades']
         self.table = []
 
         # vars
@@ -48,7 +49,7 @@ class App(ttk.Frame):
         # entry frame
         self.menu_frame = ttk.Frame(self, padding=(10, 10))
         self.menu_frame.grid(
-            row=0, column=0, padx=(10, 10), pady=(0,10)
+            row=0, column=0, padx=(10, 10), pady=(0, 10)
         )
 
         # entry label
@@ -105,17 +106,23 @@ class App(ttk.Frame):
         # entry frame
         self.content_frame = ttk.Frame(self, padding=(10, 10))
         self.content_frame.grid(
-            row=1, column=0, padx=(10, 10), pady=(0,0)
+            row=1, column=0, padx=(10, 10), pady=(0, 0)
         )
 
         # text box
         self.text_area = tk.scrolledtext.ScrolledText(self.content_frame,
-                                    width=65,
-                                    height=17,
-                                    font=("Calibri",
-                                          12))
-        self.text_area.grid(row = 0, column = 0, pady = 0, padx = 10)
-        self.text_area.configure(state ='disabled')
+                                                      width=65,
+                                                      height=17,
+                                                      font=("Calibri",
+                                                            12))
+        self.text_area.grid(row=0, column=0, pady=0, padx=10)
+        self.text_area.configure(state='disabled')
+
+        # setup colors for the text area
+        # https://www.wikipython.com/tkinter-ttk-tix/summary-information/colors/
+        self.text_area.tag_configure('good', foreground='green')
+        self.text_area.tag_configure('bad', foreground='red')
+        self.text_area.tag_configure('medium', foreground='orange2')
 
     def submit(self):
         # getting name
@@ -129,7 +136,7 @@ class App(ttk.Frame):
         self.pref = classnum[matchForPrefix.start():matchForPrefix.end()]
         matchForClass = re.search(r'[0-9]+', classnum)
         self.num = int(classnum[matchForClass.start():matchForClass.end()])
-        self.className.set(Nebula.getCourseNameWithNumber(str(self.pref), self.num)) #TODO: Nebula ;)
+        self.className.set(Nebula.getCourseNameWithNumber(str(self.pref), self.num))  # TODO: Nebula ;)
         # creating list
         self.g1 = Grades(str(self.pref), str(self.num))
         self.sort()
@@ -147,7 +154,7 @@ class App(ttk.Frame):
 
         if courseName.find('No results') == -1:
             self.text_area.insert(tk.INSERT, "Professor\t\t\t\tComb.\tRating\tGrades\n\n")
-        
+
         # if self.sort_var.get() != 'Combined':
         #     self.text_area.insert(tk.INSERT, "\tClasses") # add classes counter if not default sort
         # self.text_area.insert(tk.INSERT, "\n\n")
@@ -169,21 +176,46 @@ class App(ttk.Frame):
                     if i.rmpName.upper().find(j) != -1:
                         found = True
                 if not found:
-                        valid = False
+                    valid = False
             if valid:
-                add = i.rmpName + "\t\t\t\t" + str(round(i.trueRating, 2)) + "\t"
-                if i.rmpRating != -1:
-                    add += str(i.rmpRating)
+                tempRating = i.rmpRating
+                if tempRating == -1:
+                    tempRating = 2.5
+                if i.trueRating > 75 and i.getMedian() > 80 and tempRating > 2.5:
+                    self.text_area.insert(tk.INSERT, i.rmpName + "\t\t\t\t", 'good')
+                elif (i.trueRating > 75 or i.getMedian() > 80 or tempRating > 2.5) and (not tempRating <= 1 and not i.getMedian() < 70):
+                    self.text_area.insert(tk.INSERT, i.rmpName + "\t\t\t\t", 'medium')
                 else:
-                    add += "N/A"
-                add += "\t" + str(i.getMedian()) + "\n"
-        
-                self.text_area.insert(tk.INSERT, add)
+                    self.text_area.insert(tk.INSERT, i.rmpName + "\t\t\t\t", 'bad')
+
+                if i.trueRating <= 75:
+                    self.text_area.insert(tk.INSERT, str(round(i.trueRating, 2)) + "\t", 'bad')
+                else:
+                    self.text_area.insert(tk.INSERT, str(round(i.trueRating, 2)) + "\t", 'good')
+
+                add = ""
+                if i.rmpRating != -1:
+                    if i.rmpRating <= 2.5:
+                        self.text_area.insert(tk.INSERT, str(i.rmpRating), 'bad')
+                    else:
+                        self.text_area.insert(tk.INSERT, str(i.rmpRating), 'good')
+                else:
+                    self.text_area.insert(tk.INSERT, "N/A")
+
+                self.text_area.insert(tk.INSERT, '\t')
+
+                if i.getMedian() <= 80:
+                    self.text_area.insert(tk.INSERT, str(i.getMedian()), 'bad')
+                else:
+                    self.text_area.insert(tk.INSERT, str(i.getMedian()), 'good')
+
+                self.text_area.insert(tk.INSERT, '\n')
 
         self.text_area.configure(state='disabled')
 
     def updateRMP(self):
         RMPHolder.x.createprofessorlist()
+
 
 if __name__ == "__main__":
     # set up root

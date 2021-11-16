@@ -1,3 +1,4 @@
+
 from ratemyprof_api import RMPHolder
 
 class Professor:
@@ -76,7 +77,12 @@ class Professor:
 			elif self.classNum >= 1:
 				self.trueRating = (4/5)*(self.rmpRating*20) + (1/5)*(self.getMedian())
 		else:
-			self.trueRating = self.getMedian()
+			if self.classNum >= 3:
+				self.trueRating = (2 / 5) * (2.5 * 20) + (3 / 5) * (self.getMedian())
+			elif self.classNum >= 2:
+				self.trueRating = (3 / 5) * (2.5 * 20) + (2 / 5) * (self.getMedian())
+			elif self.classNum >= 1:
+				self.trueRating = (4 / 5) * (2.5 * 20) + (1 / 5) * (self.getMedian())
 
 
 	def getMedian(self):

@@ -9,6 +9,25 @@ import re
 from Grades import Grades
 
 
+class PlaceholderEntry(ttk.Entry):
+	def __init__(self, container, placeholder, *args, **kwargs):
+		super().__init__(container, *args, style="Placeholder.TEntry", **kwargs)
+		self.placeholder = placeholder
+
+		self.insert("0", self.placeholder)
+		self.bind("<FocusIn>", self._clear_placeholder)
+		self.bind("<FocusOut>", self._add_placeholder)
+
+	def _clear_placeholder(self, e):
+		if self["style"] == "Placeholder.TEntry":
+			self.delete("0", "end")
+			self["style"] = "TEntry"
+
+	def _add_placeholder(self, e):
+		if not self.get():
+			self.insert("0", self.placeholder)
+			self["style"] = "Placeholder.TEntry"
+
 class App(ttk.Frame):
 	def __init__(self, parent):
 		ttk.Frame.__init__(self)
@@ -61,10 +80,13 @@ class App(ttk.Frame):
 		self.classcode_label.grid(row=0, column=2, padx=0, pady=5)
 
 		# entry field
-		self.classcode_entry = ttk.Entry(
-			self.menu_frame, textvariable=self.classnum_var, font=('calibre', 10, 'normal')
-		)
+		self.classcode_entry = PlaceholderEntry(self.menu_frame, "Search for a class", textvariable=self.classnum_var)
 		self.classcode_entry.grid(row=0, column=0, padx=0, pady=5)
+
+		# self.classcode_entry = ttk.Entry(
+		# 	self.menu_frame, textvariable=self.classnum_var, font=('calibre', 10, 'normal')
+		# )
+		# self.classcode_entry.grid(row=0, column=0, padx=0, pady=5)
 
 		# submit button
 		self.sub_btn = ttk.Button(
@@ -226,7 +248,6 @@ class App(ttk.Frame):
 
 	def updateRMP(self):
 		RMPHolder.x.createprofessorlist()
-
 
 if __name__ == "__main__":
 	# set up root

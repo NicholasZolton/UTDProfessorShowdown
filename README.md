@@ -3,7 +3,7 @@ UT Dallas Professor Showdown combines the powers of UTGrades, Nebula, and RateMy
 
 Simply enter the class code in the search box and click Search to get a list of all the professors for a class, ordered by the combined rating.
 
-![Image 1](https://github.com/IanPrigmore/IanPrigmore/blob/main/pic%201.png?raw=true)
+![image](https://user-images.githubusercontent.com/78943323/141875427-b5acbefb-87a6-42d5-8ed2-63945de07cb3.png)
 
 # Additional notes ✏
 Developed in Python, with use of the Nebula API, RateMyProfessor, and UTGrades data.

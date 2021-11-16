@@ -1,11 +1,10 @@
+import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
 
 import Nebula
-import ratemyprof_api
 from ratemyprof_api import RMPHolder
-from multiprocessing import Process
 import re
 from Grades import Grades
 
@@ -94,6 +93,11 @@ class App(ttk.Frame):
         )
         self.class2_entry.grid(row=1, column=0, padx=5, pady=5)
 
+        # bindings
+        self.classcode_entry.bind("<Tab>", self.focusText2)
+        self.class2_entry.bind("<Return>", self.submitBind)
+        self.classcode_entry.bind("<Return>", self.submitBind)
+
         # class name label
         # self.classNameLabel = ttk.Label(
         #     self.menu_frame,
@@ -128,18 +132,22 @@ class App(ttk.Frame):
         # getting name
         self.filterList = re.findall(r'[a-zA-Z]+', self.class2_var.get())
         self.filterList = [each_string.upper() for each_string in self.filterList]
-        self.class2_var.set("")
         classnum = self.classnum_var.get()
-        self.professorname_var.set("")
-        self.classnum_var.set("")
         matchForPrefix = re.search(r'[a-zA-Z]+', classnum)
         self.pref = classnum[matchForPrefix.start():matchForPrefix.end()]
         matchForClass = re.search(r'[0-9]+', classnum)
         self.num = int(classnum[matchForClass.start():matchForClass.end()])
-        self.className.set(Nebula.getCourseNameWithNumber(str(self.pref), self.num))  # TODO: Nebula ;)
+        self.className.set(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
         # creating list
         self.g1 = Grades(str(self.pref), str(self.num))
         self.sort()
+
+    def submitBind(self, test):
+        self.submit()
+
+    def focusText2(self, test):
+        self.class2_entry.focus()
+        return "break"
 
     def test(self, value):
         self.sort()

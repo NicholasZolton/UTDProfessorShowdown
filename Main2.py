@@ -12,13 +12,14 @@ class App(ttk.Frame):
 		ttk.Frame.__init__(self)
 
 		# Rows/Column setup
-		for index in [0, 1, 2]:
-			self.columnconfigure(index=index, weight=1)
-			self.rowconfigure(index=index, weight=1)
+		self.columnconfigure(index=0, weight=1)
+		self.rowconfigure(index=0, weight=1)
+		self.rowconfigure(index=1, weight=1)
 
 		# Lists
 		self.option_menu_list = ['', 'Combined', 'Rating', 'Grades']
 		self.setup()
+
 	def setup(self):
 		self.menubar()
 		self.controls()
@@ -46,9 +47,26 @@ class App(ttk.Frame):
 		# Controls frame
 		self.controls_frame = ttk.Frame(self, padding=(10, 10))
 		self.controls_frame.grid(row=0, column=0, padx=(10, 10), pady=(0, 10), sticky="nsew")
-		# entry field
+
+		# Classcode PlaceholderEntry
+		style = ttk.Style(root)
+		style.configure("Placeholder.TEntry", foreground="#d5d5d5")
 		self.classcode_entry = self.PlaceholderEntry(self.controls_frame, "Search for a class")
-		self.classcode_entry.grid(row=0, column=0, padx=0, pady=5)
+		self.classcode_entry.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+		# Classcode Submit button
+		self.classcode_submit = ttk.Button(self.controls_frame, text='Search')
+		self.classcode_submit.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+
+		# Classcode Label
+		self.classcode_label = ttk.Label(self.controls_frame, text="Class code (ex: 'CS 2305')", font=('calibre', 10, 'normal'))
+		self.classcode_label.grid(row=0, column=2, padx=5, pady=5, sticky="nsew")
+
+		# Sort dropdown
+		self.optionmenu = ttk.OptionMenu(
+			self.controls_frame, self.sort_var, *self.option_menu_list, command=self.test
+		)
+		self.optionmenu.grid(row=0, column=4, padx=5, pady=5)
 
 	class PlaceholderEntry(ttk.Entry):
 		def __init__(self, container, placeholder, *args, **kwargs):
@@ -76,7 +94,7 @@ if __name__ == "__main__":
 
 	# Theme setup
 	root.tk.call("source", "azure.tcl")
-	root.tk.call("set_theme", "dark")
+	root.tk.call("set_theme", "light")
 
 	app = App(root)
 	app.pack(fill="both", expand=True)

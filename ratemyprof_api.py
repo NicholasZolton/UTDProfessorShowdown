@@ -1,3 +1,7 @@
+# Author: Rodantny Reyes
+# License: MIT license
+# Source: https://github.com/Rodantny/Rate-My-Professor-Scraper-and-Search
+
 import os.path
 
 import requests

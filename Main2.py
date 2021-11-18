@@ -18,27 +18,57 @@ class App(ttk.Frame):
 
 		# Lists
 		self.option_menu_list = ['', 'Combined', 'Rating', 'Grades']
+		self.setup()
 	def setup(self):
 		self.menubar()
+		self.controls()
+
 	def menubar(self):
-		# menu bar
 		self.menubar = tk.Menu(root)
 
-		# advanced
+		# Advanced
 		advanced = tk.Menu(self.menubar, tearoff=0)
 		self.menubar.add_cascade(label='Advanced', menu=advanced)
 		advanced.add_command(label='Placeholder', command=None)
 		advanced.add_separator()
-		advanced.add_command(label='Update RateMyProfessor', command=self.updateRMP)
+		advanced.add_command(label='Update RateMyProfessor')
 
-		# about
+		# About
 		about = tk.Menu(self.menubar, tearoff=0)
 		self.menubar.add_cascade(label='About', menu=about)
 		about.add_command(label='GitHub', command=None)
 		
-		# draw menu bar
+		# Draw menu bar
 		root.config(menu=self.menubar)
 		self.menubar = tk.Menu(root)
+	
+	def controls(self):
+		# Controls frame
+		self.controls_frame = ttk.Frame(self, padding=(10, 10))
+		self.controls_frame.grid(row=0, column=0, padx=(10, 10), pady=(0, 10), sticky="nsew")
+		# entry field
+		self.classcode_entry = self.PlaceholderEntry(self.controls_frame, "Search for a class")
+		self.classcode_entry.grid(row=0, column=0, padx=0, pady=5)
+
+	class PlaceholderEntry(ttk.Entry):
+		def __init__(self, container, placeholder, *args, **kwargs):
+			super().__init__(container, *args, style="Placeholder.TEntry", **kwargs)
+			self.placeholder = placeholder
+
+			self.insert("0", self.placeholder)
+			self.bind("<FocusIn>", self._clear_placeholder)
+			self.bind("<FocusOut>", self._add_placeholder)
+
+		def _clear_placeholder(self, e):
+			if self["style"] == "Placeholder.TEntry":
+				self.delete("0", "end")
+				self["style"] = "TEntry"
+
+		def _add_placeholder(self, e):
+			if not self.get():
+				self.insert("0", self.placeholder)
+				self["style"] = "Placeholder.TEntry"
+
 
 if __name__ == "__main__":
 	root = tk.Tk()
@@ -46,7 +76,7 @@ if __name__ == "__main__":
 
 	# Theme setup
 	root.tk.call("source", "azure.tcl")
-	root.tk.call("set_theme", "light")
+	root.tk.call("set_theme", "dark")
 
 	app = App(root)
 	app.pack(fill="both", expand=True)

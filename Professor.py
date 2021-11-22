@@ -40,6 +40,8 @@ class Professor:
 		# calculate median
 		self.comb = []
 		for i in self.data:
+			if 'F' in i["grades"]:
+				self.failCount += int(i["grades"]["F"])
 			# print(i["term"] + ' ' + i["sect"] + ' ' + i["prof"])
 			for j in i["grades"]:
 				if j != "W" and j != "I":
@@ -53,11 +55,8 @@ class Professor:
 						self.dropCount += int(i["grades"]["I"])
 		self.comb.sort()
 		# calculate % failed
-		for i in self.data:
-			if 'F' in i["grades"]:
-				self.failCount += int(i["grades"]["F"])
 		if self.studentCount == 0:
-			self.studentCount == 1
+			self.studentCount = 1
 
 		# Rate My Professor attributes
 		self.trueRating = 0
@@ -91,4 +90,4 @@ class Professor:
 		return self.failCount / self.studentCount
 
 	def getPercentDropped(self):
-		return self.dropCount / self.studentCount
+		return self.dropCount / (self.studentCount + self.dropCount)

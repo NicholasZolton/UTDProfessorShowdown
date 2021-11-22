@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext
+from tkinter.constants import N
 
 import Nebula
 from ratemyprof_api import RMPHolder
@@ -24,12 +25,12 @@ class App(ttk.Frame):
 		# vars
 		self.professorname_var = tk.StringVar()
 		self.classnum_var = tk.StringVar()
-		self.class2_var = tk.StringVar()
+		self.filter_var = tk.StringVar()
 		self.className = tk.StringVar()
 		self.sort_var = tk.StringVar(value=self.option_menu_list[1])
 
 		self.tree = [
-			("", 1, "Pei-Pang Chin", (96.5, 4.5, "B-"))
+			("", 0, "Pei-Pang Chin", (96.5, 4.5, "B-", 5))
 		]
 
 		self.setup()
@@ -66,27 +67,33 @@ class App(ttk.Frame):
 		# Classcode PlaceholderEntry
 		style = ttk.Style(root)
 		style.configure("Placeholder.TEntry", foreground="#808080")
-		self.classcode_entry = self.PlaceholderEntry(self.controls_frame, "Search for a class", textvariable=self.classnum_var)
+		self.classcode_entry = self.PlaceholderEntry(
+			self.controls_frame, "Search for a class", textvariable=self.classnum_var)
 		self.classcode_entry.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
 		# Classcode Submit button
-		self.classcode_submit = ttk.Button(self.controls_frame, text='Search', command=self.submit)
+		self.classcode_submit = ttk.Button(
+			self.controls_frame, text='Search', command=self.submit)
 		self.classcode_submit.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
 		# Classcode Label
-		self.classcode_label = ttk.Label(self.controls_frame, text="Class code (ex: 'CS 2305')", font=('calibre', 10, 'normal'))
+		self.classcode_label = ttk.Label(
+			self.controls_frame, text="Class code (ex: 'CS 2305')", font=('calibre', 10, 'normal'))
 		self.classcode_label.grid(row=0, column=2, padx=10, pady=5, sticky="w")
 
 		# Sort dropdown
-		self.optionmenu = ttk.OptionMenu(self.controls_frame, self.sort_var, *self.option_menu_list, command=self.test)
+		self.optionmenu = ttk.OptionMenu(
+			self.controls_frame, self.sort_var, *self.option_menu_list, command=self.test)
 		self.optionmenu.grid(row=0, column=4, padx=5, pady=5)
 
 		# Filter PlaceholderEntry
-		self.filter_entry = self.PlaceholderEntry(self.controls_frame, "Filter by professors")
+		self.filter_entry = self.PlaceholderEntry(
+			self.controls_frame, "Filter by professors", textvariable=self.filter_var)
 		self.filter_entry.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
 		# Filter Label
-		self.filter_label = ttk.Label(self.controls_frame, text="Filter names (ex: 'Chin, Ntafos, Feng')", font=('calibre', 10, 'normal'))
+		self.filter_label = ttk.Label(
+			self.controls_frame, text="Filter names (ex: 'Chin, Ntafos, Feng')", font=('calibre', 10, 'normal'))
 		self.filter_label.grid(row=1, column=1, padx=10, pady=5, columnspan=2, sticky="w")
 		
 		# bindings
@@ -107,7 +114,7 @@ class App(ttk.Frame):
 		self.treeview = ttk.Treeview(self.view_frame,
 			selectmode="browse",
 			yscrollcommand=self.scrollbar.set,
-			columns=(1, 2, 3),
+			columns=(1, 2, 3, 4),
 			height=15,
 		)
 		self.treeview.pack(expand=True, fill="both")
@@ -118,12 +125,14 @@ class App(ttk.Frame):
 		self.treeview.column(1, anchor="w", width=50)
 		self.treeview.column(2, anchor="w", width=50)
 		self.treeview.column(3, anchor="w", width=50)
+		self.treeview.column(4, anchor="center", width=30)
 
 		# Treeview headings
 		self.treeview.heading("#0", text="Professor", anchor="center")
 		self.treeview.heading(1, text="Combined", anchor="center")
 		self.treeview.heading(2, text="Rating", anchor="center")
 		self.treeview.heading(3, text="Grades", anchor="center")
+		self.treeview.heading(4, text="Classes", anchor="center")
 
 		# Insert treeview data
 		for item in self.tree:
@@ -140,25 +149,31 @@ class App(ttk.Frame):
 
 	def test(self, value):
 		self.sort()
-		print("wenis")
 
 	def submit(self):
+		print("grade 0")
 		# getting name
-		self.filterList = re.findall(r'[a-zA-Z]+', self.class2_var.get())
+		self.filterList = re.findall(r'[a-zA-Z]+', self.filter_var.get())
 		self.filterList = [each_string.upper() for each_string in self.filterList]
 		classnum = self.classnum_var.get()
 		matchForPrefix = re.search(r'[a-zA-Z]+', classnum)
 		self.pref = classnum[matchForPrefix.start():matchForPrefix.end()]
 		matchForClass = re.search(r'[0-9]+', classnum)
 		self.num = int(classnum[matchForClass.start():matchForClass.end()])
-		self.className.set(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
+		# self.className.set(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
+		print(self.filterList)
+		if(self.filter_var.get() == "Filter by professors"):
+			self.filterList.clear()
+
 		# creating list
+		print("grade 1")
 		self.g1 = Grades(str(self.pref), str(self.num))
+		print("grade 2")
 		self.sort()
-		print("wenis")
+		print("grade 3")
 
 	def sort(self):
-		courseName = str(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
+		# courseName = str(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
 		sorted = 0
 
 		if self.sort_var.get() == 'Combined':
@@ -170,6 +185,9 @@ class App(ttk.Frame):
 
 		for item in self.treeview.get_children():
 			self.treeview.delete(item)
+		self.tree.clear()
+		n = 0
+		m = 0
 		for i in sorted:
 			valid = True
 			if len(self.filterList) > 0:
@@ -183,13 +201,25 @@ class App(ttk.Frame):
 				tempRating = i.rmpRating
 				if tempRating == -1:
 					tempRating = 2.5
-				num = self.tree[len(self.tree) - 1][1]
-				self.tree.append(("", num + 1, i.rmpName, (i.trueRating, i.rmpRating, i.getMedian())))
+				roundTrueRating = round(i.trueRating, 2)
+				roundRmpRating = round(i.rmpRating, 2)
+				self.tree.append(("", n, i.rmpName, (roundTrueRating, roundRmpRating, i.getMedian(), i.classNum)))
 				self.treeview.insert(
-					parent=self.tree[num][0], index="end", iid=self.tree[num][1], text=self.tree[num][2], values=self.tree[num][3]
+					parent=self.tree[m][0], index="end", iid=self.tree[m][1], text=self.tree[m][2], values=self.tree[m][3]
 				)
-
-		self.text_area.configure(state='disabled')
+				self.treeview.insert(parent=n, index = "end", iid=n+1, text="UTD Grades Data", values=[])
+				self.treeview.insert(parent=n, index = "end", iid=n+2, text="Rate My Professor Data", values=[])
+				self.treeview.insert(
+					parent=n+1, index="end", iid=n+3, text="Student count",
+					values=[i.studentCount])
+				self.treeview.insert(
+					parent=n+1, index="end", iid=n+4, text="Dropped count",
+					values=[i.dropCount, str(round(i.getPercentDropped() * 100,1)) + '%'])
+				self.treeview.insert(
+					parent=n+1, index="end", iid=n+5, text="Failed count",
+					values=[i.failCount, str(round(i.getPercentFailed() * 100,1)) + '%'])
+				m += 1
+				n += 6
 
 	def updateRMP(self):
 		RMPHolder.x.createprofessorlist()

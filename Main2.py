@@ -28,32 +28,8 @@ class App(ttk.Frame):
 		self.className = tk.StringVar()
 		self.sort_var = tk.StringVar(value=self.option_menu_list[1])
 
-		self.treeview_data = [
-			("", 1, "Parent", ("Item 1", "Value 1")),
-			(1, 2, "Child", ("Subitem 1.1", "Value 1.1")),
-			(1, 3, "Child", ("Subitem 1.2", "Value 1.2")),
-			(1, 4, "Child", ("Subitem 1.3", "Value 1.3")),
-			(1, 5, "Child", ("Subitem 1.4", "Value 1.4")),
-			("", 6, "Parent", ("Item 2", "Value 2")),
-			(6, 7, "Child", ("Subitem 2.1", "Value 2.1")),
-			(6, 8, "Sub-parent", ("Subitem 2.2", "Value 2.2")),
-			(8, 9, "Child", ("Subitem 2.2.1", "Value 2.2.1")),
-			(8, 10, "Child", ("Subitem 2.2.2", "Value 2.2.2")),
-			(8, 11, "Child", ("Subitem 2.2.3", "Value 2.2.3")),
-			(6, 12, "Child", ("Subitem 2.3", "Value 2.3")),
-			(6, 13, "Child", ("Subitem 2.4", "Value 2.4")),
-			("", 14, "Parent", ("Item 3", "Value 3")),
-			(14, 15, "Child", ("Subitem 3.1", "Value 3.1")),
-			(14, 16, "Child", ("Subitem 3.2", "Value 3.2")),
-			(14, 17, "Child", ("Subitem 3.3", "Value 3.3")),
-			(14, 18, "Child", ("Subitem 3.4", "Value 3.4")),
-			("", 19, "Parent", ("Item 4", "Value 4")),
-			(19, 20, "Child", ("Subitem 4.1", "Value 4.1")),
-			(19, 21, "Sub-parent", ("Subitem 4.2", "Value 4.2")),
-			(21, 22, "Child", ("Subitem 4.2.1", "Value 4.2.1")),
-			(21, 23, "Child", ("Subitem 4.2.2", "Value 4.2.2")),
-			(21, 24, "Child", ("Subitem 4.2.3", "Value 4.2.3")),
-			(19, 25, "Child", ("Subitem 4.3", "Value 4.3")),
+		self.tree = [
+			("", 1, "Pei-Pang Chin", (96.5, 4.5, "B-"))
 		]
 
 		self.setup()
@@ -121,7 +97,7 @@ class App(ttk.Frame):
 	def treeview(self):
 		# Treeview frame
 		self.view_frame = ttk.Frame(self, padding=(10, 0))
-		self.view_frame.grid(row=1, column=0, padx=(10, 10), pady=(0, 20), sticky="nsew")
+		self.view_frame.grid(row=1, column=0, padx=(10, 10), pady=(0, 20), sticky="nsnew")
 
 		# Scrollbar
 		self.scrollbar = ttk.Scrollbar(self.view_frame)
@@ -138,10 +114,10 @@ class App(ttk.Frame):
 		self.scrollbar.config(command=self.treeview.yview)
 		
 		# Treeview columns
-		self.treeview.column("#0", anchor="w", width=50)
-		self.treeview.column(1, anchor="w", width=10)
-		self.treeview.column(2, anchor="w", width=10)
-		self.treeview.column(3, anchor="w", width=10)
+		self.treeview.column("#0", anchor="w", width=250, stretch="no")
+		self.treeview.column(1, anchor="w", width=50)
+		self.treeview.column(2, anchor="w", width=50)
+		self.treeview.column(3, anchor="w", width=50)
 
 		# Treeview headings
 		self.treeview.heading("#0", text="Professor", anchor="center")
@@ -150,7 +126,7 @@ class App(ttk.Frame):
 		self.treeview.heading(3, text="Grades", anchor="center")
 
 		# Insert treeview data
-		for item in self.treeview_data:
+		for item in self.tree:
 			self.treeview.insert(
 				parent=item[0], index="end", iid=item[1], text=item[2], values=item[3]
 			)
@@ -164,6 +140,7 @@ class App(ttk.Frame):
 
 	def test(self, value):
 		self.sort()
+		print("wenis")
 
 	def submit(self):
 		# getting name
@@ -178,22 +155,10 @@ class App(ttk.Frame):
 		# creating list
 		self.g1 = Grades(str(self.pref), str(self.num))
 		self.sort()
+		print("wenis")
 
 	def sort(self):
-		self.table.clear()
-		self.text_area.configure(state='normal')
-		self.text_area.delete('1.0', tk.END)
 		courseName = str(Nebula.getCourseNameWithNumber(str(self.pref), self.num))
-
-		self.text_area.insert(tk.INSERT, courseName + '\n')
-
-		if courseName.find('No results') == -1:
-			self.text_area.insert(tk.INSERT, "Professor\t\t\t\tComb.\tRating\tGrades\n\n")
-
-		# if self.sort_var.get() != 'Combined':
-		#	 self.text_area.insert(tk.INSERT, "\tClasses") # add classes counter if not default sort
-		# self.text_area.insert(tk.INSERT, "\n\n")
-
 		sorted = 0
 
 		if self.sort_var.get() == 'Combined':
@@ -203,6 +168,8 @@ class App(ttk.Frame):
 		else:
 			sorted = self.g1.sortedProfsByRMP
 
+		for item in self.treeview.get_children():
+			self.treeview.delete(item)
 		for i in sorted:
 			valid = True
 			if len(self.filterList) > 0:
@@ -216,35 +183,11 @@ class App(ttk.Frame):
 				tempRating = i.rmpRating
 				if tempRating == -1:
 					tempRating = 2.5
-				if i.trueRating > 75 and i.getMedian() > 80 and tempRating > 2.5:
-					self.text_area.insert(tk.INSERT, i.rmpName + "\t\t\t\t", 'good')
-				elif (i.trueRating > 75 or i.getMedian() > 80 or tempRating > 2.5) and (not tempRating <= 1 and not i.getMedian() < 70):
-					self.text_area.insert(tk.INSERT, i.rmpName + "\t\t\t\t", 'medium')
-				else:
-					self.text_area.insert(tk.INSERT, i.rmpName + "\t\t\t\t", 'bad')
-
-				if i.trueRating <= 75:
-					self.text_area.insert(tk.INSERT, str(round(i.trueRating, 2)) + "\t", 'bad')
-				else:
-					self.text_area.insert(tk.INSERT, str(round(i.trueRating, 2)) + "\t", 'good')
-
-				add = ""
-				if i.rmpRating != -1:
-					if i.rmpRating <= 2.5:
-						self.text_area.insert(tk.INSERT, str(i.rmpRating), 'bad')
-					else:
-						self.text_area.insert(tk.INSERT, str(i.rmpRating), 'good')
-				else:
-					self.text_area.insert(tk.INSERT, "N/A")
-
-				self.text_area.insert(tk.INSERT, '\t')
-
-				if i.getMedian() <= 80:
-					self.text_area.insert(tk.INSERT, str(i.getMedian()), 'bad')
-				else:
-					self.text_area.insert(tk.INSERT, str(i.getMedian()), 'good')
-
-				self.text_area.insert(tk.INSERT, '\n')
+				num = self.tree[len(self.tree) - 1][1]
+				self.tree.append(("", num + 1, i.rmpName, (i.trueRating, i.rmpRating, i.getMedian())))
+				self.treeview.insert(
+					parent=self.tree[num][0], index="end", iid=self.tree[num][1], text=self.tree[num][2], values=self.tree[num][3]
+				)
 
 		self.text_area.configure(state='disabled')
 
@@ -289,4 +232,5 @@ if __name__ == "__main__":
 	y_cordinate = int((root.winfo_screenheight() / 2) - (root.winfo_height() / 2))
 	root.geometry("+{}+{}".format(x_cordinate, y_cordinate-20))
 
+	root.resizable(False, True) 
 	root.mainloop()

@@ -30,7 +30,7 @@ class App(ttk.Frame):
 		self.sort_var = tk.StringVar(value=self.option_menu_list[1])
 
 		self.tree = [
-			("", 0, "Pei-Pang Chin", (96.5, 4.5, "B-", 5))
+			("", 0, "Pei-Pang Chin", (96.5, "4.5", "B-", 5))
 		]
 
 		self.setup()
@@ -48,7 +48,7 @@ class App(ttk.Frame):
 		self.menubar.add_cascade(label='Advanced', menu=advanced)
 		advanced.add_command(label='Placeholder', command=None)
 		advanced.add_separator()
-		advanced.add_command(label='Update RateMyProfessor')
+		advanced.add_command(label='Update RateMyProfessor', command=self.updateRMP)
 
 		# About
 		about = tk.Menu(self.menubar, tearoff=0)
@@ -95,6 +95,11 @@ class App(ttk.Frame):
 		self.filter_label = ttk.Label(
 			self.controls_frame, text="Filter names (ex: 'Chin, Ntafos, Feng')", font=('calibre', 10, 'normal'))
 		self.filter_label.grid(row=1, column=1, padx=10, pady=5, columnspan=2, sticky="w")
+
+		# Settings button
+		self.classcode_submit = ttk.Button(
+			self.controls_frame, text='⚙ Settings', command=self.settings)
+		self.classcode_submit.grid(row=1, column=4, padx=5, pady=5, sticky="nsew")
 		
 		# bindings
 		self.classcode_entry.bind("<Tab>", self.focusText2)
@@ -139,6 +144,15 @@ class App(ttk.Frame):
 			self.treeview.insert(
 				parent=item[0], index="end", iid=item[1], text=item[2], values=item[3]
 			)
+
+	def bottom(self):
+		# Bottom frame
+		self.bottom_frame = ttk.Frame(self, padding=(10, 0))
+		self.bottom_frame.grid(row=2, column=0, padx=(10, 10), pady=(0, 10), sticky="nsnew")
+		self.switch = ttk.Checkbutton(
+			self.bottom_frame, text="Color", style="Switch.TCheckbutton"
+		)
+		self.switch.grid(row=0, column=0, padx=0, pady=0, sticky="e")
 
 	def submitBind(self, test):
 		self.submit()
@@ -201,14 +215,27 @@ class App(ttk.Frame):
 				tempRating = i.rmpRating
 				if tempRating == -1:
 					tempRating = 2.5
-				roundTrueRating = round(i.trueRating, 2)
-				roundRmpRating = round(i.rmpRating, 2)
-				self.tree.append(("", n, i.rmpName, (roundTrueRating, roundRmpRating, i.getMedian(), i.classNum)))
+				rtr = round(i.trueRating, 2)
+				rmpSet = str(i.rmpRating)
+				if(i.rmpRating == -1):
+					rmpSet = ""
+
+				self.tree.append(("", n, i.rmpName, (rtr, rmpSet, i.getMedian(), i.classNum)))
+				
+				if(rtr >= 75):
+					fix = int(rtr - 75) * 2
+					self.treeview.tag_configure(str(n), background= '#' + rgbHex((255-fix,255,255-fix)))
+				else:
+					fix = int(rtr - 75) * -2
+					self.treeview.tag_configure(str(n), background= '#' + rgbHex((255,255-fix,255-fix)))
+				
 				self.treeview.insert(
-					parent=self.tree[m][0], index="end", iid=self.tree[m][1], text=self.tree[m][2], values=self.tree[m][3]
+					parent=self.tree[m][0], index="end", iid=self.tree[m][1], text=self.tree[m][2], values=self.tree[m][3], tags=(str(n))
 				)
-				self.treeview.insert(parent=n, index = "end", iid=n+1, text="UTD Grades Data", values=[])
-				self.treeview.insert(parent=n, index = "end", iid=n+2, text="Rate My Professor Data", values=[])
+				self.treeview.insert(
+					parent=n, index = "end", iid=n+1, text="UTD Grades Data", values=[])
+				self.treeview.insert(
+					parent=n, index = "end", iid=n+2, text="Rate My Professor Data", values=[])
 				self.treeview.insert(
 					parent=n+1, index="end", iid=n+3, text="Student count",
 					values=[i.studentCount])
@@ -220,6 +247,9 @@ class App(ttk.Frame):
 					values=[i.failCount, str(round(i.getPercentFailed() * 100,1)) + '%'])
 				m += 1
 				n += 6
+	def settings(self):
+		win = tk.Toplevel()
+		win.wm_title("Settings")
 
 	def updateRMP(self):
 		RMPHolder.x.createprofessorlist()
@@ -242,6 +272,8 @@ class App(ttk.Frame):
 			if not self.get():
 				self.insert("0", self.placeholder)
 				self["style"] = "Placeholder.TEntry"
+def rgbHex(rgb):
+	return '%02x%02x%02x' % rgb
 
 
 if __name__ == "__main__":
